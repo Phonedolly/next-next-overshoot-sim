@@ -51,10 +51,11 @@ const Button = styled(motion.button)`
   /* width: 8em;
   height:  */
   background-color: #404040;
-  padding: 1em 1.5em;
+  padding: 0.4em 1em;
   border: none;
-  border-radius: 30px;
+  border-radius: 10px;
   cursor: pointer;
+  margin:0.6em;
 `
 
 
@@ -70,13 +71,14 @@ const Container = styled.main`
     }
 `;
 const OptionsContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+
   gap: 1.5em 2em;
   width: 100%;
   max-width: 90vw;
   margin: 1em;
   @media (min-width: 1280px) {
+    display: grid;
+  grid-template-columns: 1fr 1fr;
     max-width: 80vw;
   }
   align-items: center;
@@ -123,6 +125,8 @@ const BigResetButton = styled(Button)`
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
+  border-radius: 18px;
+  background-color: hsl(0, 0%, 10%);
 `;
 
 
@@ -132,7 +136,7 @@ const Title = styled.h1`
   `;
 
 
-const Range = styled.input`
+const Range = styled(motion.input)`
 appearance: none;
 width: 100%;
 background-color: transparent;
@@ -144,10 +148,73 @@ cursor: pointer;
 background-image: linear-gradient(to right, #ec4899 0%, #ec4899 ${makePercentage}, #404040 ${makePercentage}, #404040 100%);
 `;
 
+const NumInput = styled(motion.input)`
+  /* --input-focus-border: #ec4899; */
+  appearance: none;
+  margin: 0.6em;
+  height: 2rem;
+  border-radius: 10px;
+  border: none;
+  outline: 0;
+  background: #404040;
+  color: white;
+  width: calc(2.5rem + 0.3rem * ${props => { return props.numberLength > 1 ? props.numberLength : 1 }});
+  font-family: ${outfit.className};
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-align: left;
+  padding: 0 0 0 0.8rem;
+  :focus{
+    /* transition: "0 0 0 1px 1em .2s, #EC4899 .2s,background .2s, inset 0 0 0 1px #EC4899 .2s"  */
+    /* inset: 0 0 0 1px 1em #EC4899; */
+    box-shadow: inset 0 0 0 1px #EC4899;
+    outline-width: 0;
+  }
+  /* ::-webkit-input-placeholder{
+      opacity:0.5;
+  } */
+  ::-webkit-textfield-decoration-container{
+
+    
+  }
+  ::-webkit-inner-spin-button{
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    display: block;
+    width: 1.5rem;
+    height: calc(100% - 2px);
+    padding: 0;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg fill='%23FFFFFF' version='1.1' id='Capa_1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='-149.35 -149.35 851.86 851.86' xml:space='preserve' stroke='%23FFFFFF'%3E%3Cg id='SVGRepo_bgCarrier' stroke-width='0'%3E%3C/g%3E%3Cg id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'%3E%3C/g%3E%3Cg id='SVGRepo_iconCarrier'%3E%3Cg%3E%3Cg%3E%3Cpath d='M351.082,395.509h-149.01c-12.02,0-16.934,8.464-10.979,18.904l74.695,130.913c5.955,10.44,15.619,10.44,21.573,0 l74.701-130.919C368.022,403.973,363.101,395.509,351.082,395.509z'%3E%3C/path%3E%3Cpath d='M287.366,7.831c-5.954-10.441-15.618-10.441-21.572,0L191.092,138.75c-5.955,10.44-1.04,18.904,10.979,18.904h149.01 c12.02,0,16.934-8.464,10.979-18.904L287.366,7.831z'%3E%3C/path%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    border-bottom-right-radius: 14px;
+    border-top-right-radius: 14px;
+    cursor: pointer;
+    opacity:1;
+    text-align: center;
+  }
+`;
+
+const NumInputVariants = {
+  // activate:{transition: "0 0 0 1px 1em .2s, #EC4899 .2s,background .2s,-webkit-box-shadow .2s"}
+  enable: {},
+  disable: {
+
+  }
+}
+
+function NumInputWithMotion({ min, max, step, onChange, value }) {
+  return (
+    <NumInput type="number" animate={NumInputVariants.disable} min={min} max={max} step={step} onChange={onChange} value={value} numberLength={String(value).length} />
+  )
+}
+
 function BigResetButtonWithMotion(props) {
   return (
     <BigResetButton
-      whileHover={{ scale: 1.03, transition: { duration: 0.3, } }} whileTap={{ scale: 1.00, transition: { duration: 0.05, ease: 'linear' } }}>{props.children}</BigResetButton>
+      whileHover={{ scale: 1.03, backgroundColor: "#404040", transition: { duration: 0.3, } }} whileTap={{ scale: 1.00, backgroundColor: "#404040", transition: { duration: 0.05, ease: 'linear' } }}>{props.children}</BigResetButton>
   )
 }
 
@@ -207,7 +274,8 @@ export default function Home() {
           </OptionTitleAndValueContainer>
           <RangeAndReset>
             <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, endTime: parseFloat(e.target.value) })} value={config.endTime} endTime={config.endTime} />
-            <OptionResetButton handler={() => setConfig({ ...config, endTime: 5.00 })} />
+            <NumInputWithMotion type='number' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, endTime: parseFloat(e.target.value) })} value={config.endTime} />
+            <OptionResetButton handler={() => setConfig({ ...config, endTime: INIT_VARS.endTime })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
@@ -217,7 +285,8 @@ export default function Home() {
           </OptionTitleAndValueContainer>
           <RangeAndReset>
             <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, inPoint: parseFloat(e.target.value) })} value={config.inPoint} />
-            <OptionResetButton handler={() => setConfig({ ...config, inPoint: 1.00 })} />
+            <NumInputWithMotion type='number' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, inPoint: parseFloat(e.target.value) })} value={config.inPoint} />
+            <OptionResetButton handler={() => setConfig({ ...config, inPoint: INIT_VARS.inPoint })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
@@ -227,7 +296,8 @@ export default function Home() {
           </OptionTitleAndValueContainer>
           <RangeAndReset>
             <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, dur: parseFloat(e.target.value) })} value={config.dur} />
-            <OptionResetButton handler={() => setConfig({ ...config, dur: 5.00 })} />
+            <NumInputWithMotion min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, dur: parseFloat(e.target.value) })} value={config.dur} />
+            <OptionResetButton handler={() => setConfig({ ...config, dur: INIT_VARS.dur })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
@@ -237,7 +307,8 @@ export default function Home() {
           </OptionTitleAndValueContainer>
           <RangeAndReset>
             <Range type='range' min='0.001' max='1.00' step='0.00001' onChange={(e) => setConfig({ ...config, deltaT: parseFloat(e.target.value) })} value={config.deltaT} />
-            <OptionResetButton handler={() => setConfig({ ...config, deltaT: 0.001 })} />
+            <NumInputWithMotion min='0.001' max='1.00' step='0.00001' onChange={(e) => setConfig({ ...config, deltaT: parseFloat(e.target.value) })} value={config.deltaT} />
+            <OptionResetButton handler={() => setConfig({ ...config, deltaT: INIT_VARS.deltaT })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
@@ -247,7 +318,8 @@ export default function Home() {
           </OptionTitleAndValueContainer>
           <RangeAndReset>
             <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, startVar: parseInt(e.target.value) })} value={config.startVar} />
-            <OptionResetButton handler={() => setConfig({ ...config, startVar: 0 })} />
+            <NumInputWithMotion min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, startVar: parseInt(e.target.value) })} value={config.startVar} />
+            <OptionResetButton handler={() => setConfig({ ...config, startVar: INIT_VARS.startVar })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
@@ -256,7 +328,9 @@ export default function Home() {
             <OptionValue>{config.endVar}</OptionValue>
           </OptionTitleAndValueContainer>
           <RangeAndReset>
-            <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, endVar: parseInt(e.target.value) })} value={config.endVar} />            <OptionResetButton handler={() => setConfig({ ...config, endVar: 1000 })} />
+            <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, endVar: parseInt(e.target.value) })} value={config.endVar} />
+            <NumInputWithMotion min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, endVar: parseInt(e.target.value) })} value={config.endVar} />
+            <OptionResetButton handler={() => setConfig({ ...config, endVar: INIT_VARS.endVar })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
@@ -265,7 +339,9 @@ export default function Home() {
             <OptionValue>{config.freq}</OptionValue>
           </OptionTitleAndValueContainer>
           <RangeAndReset>
-            <Range type='range' min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, freq: parseFloat(e.target.value) })} value={config.freq} />       <OptionResetButton handler={() => setConfig({ ...config, freq: 0.01 })} />
+            <Range type='range' min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, freq: parseFloat(e.target.value) })} value={config.freq} />
+            <NumInputWithMotion min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, freq: parseFloat(e.target.value) })} value={config.freq} />
+            <OptionResetButton handler={() => setConfig({ ...config, freq: INIT_VARS.freq })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
@@ -274,7 +350,9 @@ export default function Home() {
             <OptionValue>{config.decay}</OptionValue>
           </OptionTitleAndValueContainer>
           <RangeAndReset>
-            <Range type='range' min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, decay: parseFloat(e.target.value) })} value={config.decay} /> <OptionResetButton handler={() => setConfig({ ...config, decay: 0.01 })} />
+            <Range type='range' min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, decay: parseFloat(e.target.value) })} value={config.decay} />
+            <NumInputWithMotion min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, decay: parseFloat(e.target.value) })} value={config.decay} />
+            <OptionResetButton handler={() => setConfig({ ...config, decay: INIT_VARS.decay })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
@@ -284,7 +362,8 @@ export default function Home() {
           </OptionTitleAndValueContainer>
           <RangeAndReset>
             <Range type='range' min='0.0' max='10' step='0.001' onChange={(e) => setConfig({ ...config, reduceRate: parseFloat(e.target.value) })} value={config.reduceRate} />
-            <OptionResetButton handler={() => setConfig({ ...config, reduceRate: 1 })} />
+            <NumInputWithMotion min='0.0' max='10' step='0.001' onChange={(e) => setConfig({ ...config, reduceRate: parseFloat(e.target.value) })} value={config.reduceRate} />
+            <OptionResetButton handler={() => setConfig({ ...config, reduceRate: INIT_VARS.reduceRate })} />
           </RangeAndReset>
         </OptionContainer>
       </OptionsContainer>
