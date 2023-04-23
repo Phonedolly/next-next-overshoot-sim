@@ -214,7 +214,7 @@ function NumInputWithMotion({ min, max, step, onChange, value }) {
 function BigResetButtonWithMotion(props) {
   return (
     <BigResetButton
-      whileHover={{ scale: 1.03, backgroundColor: "#404040", transition: { duration: 0.3, } }} whileTap={{ scale: 1.00, backgroundColor: "#404040", transition: { duration: 0.05, ease: 'linear' } }}>{props.children}</BigResetButton>
+      whileHover={{ scale: 1.03, backgroundColor: "#404040", transition: { duration: 0.3, } }} whileTap={{ scale: 1.00, backgroundColor: "#404040", transition: { duration: 0.05, ease: 'linear' } }} onClick={props.handler}>{props.children}</BigResetButton>
   )
 }
 
