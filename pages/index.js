@@ -8,7 +8,7 @@ import React from 'react'
 import { useEffect } from 'react'
 
 const outfit = Outfit({ subsets: ['latin'] })
-
+console.log(outfit)
 const REDUCE_RATE = 1;
 const X_AMPLIFY_FACTOR = 600;
 const DIFF_X = 0.53;
@@ -23,6 +23,10 @@ const INIT_VARS = {
   freq: 7,
   decay: 3,
   reduceRate: 1
+}
+
+function easeInOutSine(x) {
+  return -(Math.cos(Math.PI * x) - 1) / 2;
 }
 
 function makePercentage({ value, max }) {
@@ -43,6 +47,7 @@ const Button = styled(motion.button)`
   color: white;
   font-weight: bold;
   font-size: 1rem;
+  font-family: inherit;
   /* width: 8em;
   height:  */
   background-color: #404040;
@@ -67,49 +72,57 @@ const Container = styled.main`
 const OptionsContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 3em;
+  gap: 1.5em 2em;
   width: 100%;
   max-width: 90vw;
+  margin: 1em;
   @media (min-width: 1280px) {
     max-width: 80vw;
   }
   align-items: center;
 `;
 
-const EachOptionContainer = styled.div`
+const OptionContainer = styled.div`
     display: flex;
     flex-direction: column;
   `;
 
 
-const EachOptionTitleAndValueContainer = styled.div`
+const OptionTitleAndValueContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: baseline;
   gap: 0.5em;
 `;
 
-const EachOptionTitle = styled.p`
+const OptionTitle = styled.p`
    font-size: 1.2em;
    font-weight: bold;
    color: white;
+   padding-left: 0.4em;
 `;
 
-const EachOptionValue = styled.p`
-   font-size: 1.0em;
+const OptionValue = styled.p`
+   font-size: 1.2em;
    color: whitesmoke;
 `;
 
-const EachOptionResetButton = styled(ResetButton)`
+const RangeAndReset = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+`
+
+const OptionResetButton = styled(ResetButton)`
   align-items: center;
   justify-content: center;
 `;
 
 
-const BigResetButton = styled(ResetButton)`
+const BigResetButton = styled(Button)`
   align-items: center;
   justify-content: center;
-  font-size: 2.3em;
+  font-size: 1.5rem;
 `;
 
 
@@ -117,7 +130,6 @@ const Title = styled.h1`
   font-size: 3rem;
   color: white;
   `;
-
 
 
 const Range = styled.input`
@@ -132,24 +144,17 @@ cursor: pointer;
 background-image: linear-gradient(to right, #ec4899 0%, #ec4899 ${makePercentage}, #404040 ${makePercentage}, #404040 100%);
 `;
 
+function BigResetButtonWithMotion(props) {
+  return (
+    <BigResetButton
+      whileHover={{ scale: 1.03, transition: { duration: 0.3, } }} whileTap={{ scale: 1.00, transition: { duration: 0.05, ease: 'linear' } }}>{props.children}</BigResetButton>
+  )
+}
+
 export default function Home() {
   const [config, setConfig] = React.useState(INIT_VARS);
   const [graph, setGraph] = React.useState(null);
   const [refreshKey, setRefreshKey] = React.useState(0);
-
-
-  function easeInOutSine(x) {
-    return -(Math.cos(Math.PI * x) - 1) / 2;
-  }
-
-  function RunButton(props) {
-    return (
-      <motion.button
-        className='text-white font-bold text-2xl w-48 bg-neutral-700 py-3 px-4 rounded-full'
-        whileHover={{ scale: 1.1, transition: { duration: 0.25, } }} whileTap={{ scale: 1.00, transition: { duration: 0.05, ease: 'linear' } }} onClick={() => setConfig({ ...config, ...INIT_VARS })}
-      >Reset All!</motion.button>
-    )
-  }
 
   useEffect(() => {
     function drawGraph() {
@@ -195,80 +200,95 @@ export default function Home() {
       <Title>After Effect Overshoot Expression Simulator</Title>
       {graph}
       <OptionsContainer>
-        <EachOptionContainer>
-          <EachOptionTitleAndValueContainer>
-            <EachOptionTitle>End time: </EachOptionTitle>
-            <EachOptionValue>{config.endTime}s</EachOptionValue>
-            <EachOptionResetButton handler={() => setConfig({ ...config, endTime: 5.00 })} />
-          </EachOptionTitleAndValueContainer>
-          <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, endTime: parseFloat(e.target.value) })} value={config.endTime} endTime={config.endTime} />
-        </EachOptionContainer>
-        <EachOptionContainer>
-          <EachOptionTitleAndValueContainer>
-            <EachOptionTitle>inPoint: </EachOptionTitle>
-            <EachOptionValue>{config.inPoint}s</EachOptionValue>
-            <EachOptionResetButton handler={() => setConfig({ ...config, inPoint: 1.00 })} />
-          </EachOptionTitleAndValueContainer>
-          <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, inPoint: parseFloat(e.target.value) })} value={config.inPoint} />
-        </EachOptionContainer>
-        <EachOptionContainer>
-          <EachOptionTitleAndValueContainer>
-            <EachOptionTitle>Duration: </EachOptionTitle>
-            <EachOptionValue>{config.dur}s</EachOptionValue>
-            <EachOptionResetButton handler={() => setConfig({ ...config, dur: 5.00 })} />
-          </EachOptionTitleAndValueContainer>
-          <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, dur: parseFloat(e.target.value) })} value={config.dur} />
-        </EachOptionContainer>
-        <EachOptionContainer>
-          <EachOptionTitleAndValueContainer>
-            <EachOptionTitle>Delta T: </EachOptionTitle>
-            <EachOptionValue>{config.deltaT}s</EachOptionValue>
-            <EachOptionResetButton handler={() => setConfig({ ...config, deltaT: 0.001 })} />
-          </EachOptionTitleAndValueContainer>
-          <Range type='range' min='0.001' max='1.00' step='0.00001' onChange={(e) => setConfig({ ...config, deltaT: parseFloat(e.target.value) })} value={config.deltaT} />
-        </EachOptionContainer>
-        <EachOptionContainer>
-          <EachOptionTitleAndValueContainer>
-            <EachOptionTitle>Start Var: </EachOptionTitle>
-            <EachOptionValue>{config.startVar}</EachOptionValue>
-            <EachOptionResetButton handler={() => setConfig({ ...config, startVar: 0 })} />
-          </EachOptionTitleAndValueContainer>
-          <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, startVar: parseInt(e.target.value) })} value={config.startVar} />
-        </EachOptionContainer>
-        <EachOptionContainer>
-          <EachOptionTitleAndValueContainer>
-            <EachOptionTitle>End Var: </EachOptionTitle>
-            <EachOptionValue>{config.endVar}</EachOptionValue>
-            <EachOptionResetButton handler={() => setConfig({ ...config, endVar: 1000 })} />
-          </EachOptionTitleAndValueContainer>
-          <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, endVar: parseInt(e.target.value) })} value={config.endVar} />
-        </EachOptionContainer>
-        <EachOptionContainer>
-          <EachOptionTitleAndValueContainer>
-            <EachOptionTitle>Freq: </EachOptionTitle>
-            <EachOptionValue>{config.freq}</EachOptionValue>
-            <EachOptionResetButton handler={() => setConfig({ ...config, freq: 0.01 })} />
-          </EachOptionTitleAndValueContainer>
-          <Range type='range' min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, freq: parseFloat(e.target.value) })} value={config.freq} />
-        </EachOptionContainer>
-        <EachOptionContainer>
-          <EachOptionTitleAndValueContainer>
-            <EachOptionTitle>Decay: </EachOptionTitle>
-            <EachOptionValue>{config.decay}</EachOptionValue>
-            <EachOptionResetButton handler={() => setConfig({ ...config, decay: 0.01 })} />
-          </EachOptionTitleAndValueContainer>
-          <Range type='range' min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, decay: parseFloat(e.target.value) })} value={config.decay} />
-        </EachOptionContainer>
-        <EachOptionContainer>
-          <EachOptionTitleAndValueContainer>
-            <EachOptionTitle>Reduce Rate: </EachOptionTitle>
-            <EachOptionValue>{config.reduceRate}</EachOptionValue>
-            <EachOptionResetButton handler={() => setConfig({ ...config, reduceRate: 1 })} />
-          </EachOptionTitleAndValueContainer>
-          <Range type='range' min='0.0' max='10' step='0.001' onChange={(e) => setConfig({ ...config, reduceRate: parseFloat(e.target.value) })} value={config.reduceRate} />
-        </EachOptionContainer>
+        <OptionContainer>
+          <OptionTitleAndValueContainer>
+            <OptionTitle>End time: </OptionTitle>
+            <OptionValue>{config.endTime}s</OptionValue>
+          </OptionTitleAndValueContainer>
+          <RangeAndReset>
+            <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, endTime: parseFloat(e.target.value) })} value={config.endTime} endTime={config.endTime} />
+            <OptionResetButton handler={() => setConfig({ ...config, endTime: 5.00 })} />
+          </RangeAndReset>
+        </OptionContainer>
+        <OptionContainer>
+          <OptionTitleAndValueContainer>
+            <OptionTitle>inPoint: </OptionTitle>
+            <OptionValue>{config.inPoint}s</OptionValue>
+          </OptionTitleAndValueContainer>
+          <RangeAndReset>
+            <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, inPoint: parseFloat(e.target.value) })} value={config.inPoint} />
+            <OptionResetButton handler={() => setConfig({ ...config, inPoint: 1.00 })} />
+          </RangeAndReset>
+        </OptionContainer>
+        <OptionContainer>
+          <OptionTitleAndValueContainer>
+            <OptionTitle>Duration: </OptionTitle>
+            <OptionValue>{config.dur}s</OptionValue>
+          </OptionTitleAndValueContainer>
+          <RangeAndReset>
+            <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, dur: parseFloat(e.target.value) })} value={config.dur} />
+            <OptionResetButton handler={() => setConfig({ ...config, dur: 5.00 })} />
+          </RangeAndReset>
+        </OptionContainer>
+        <OptionContainer>
+          <OptionTitleAndValueContainer>
+            <OptionTitle>Delta T: </OptionTitle>
+            <OptionValue>{config.deltaT}s</OptionValue>
+          </OptionTitleAndValueContainer>
+          <RangeAndReset>
+            <Range type='range' min='0.001' max='1.00' step='0.00001' onChange={(e) => setConfig({ ...config, deltaT: parseFloat(e.target.value) })} value={config.deltaT} />
+            <OptionResetButton handler={() => setConfig({ ...config, deltaT: 0.001 })} />
+          </RangeAndReset>
+        </OptionContainer>
+        <OptionContainer>
+          <OptionTitleAndValueContainer>
+            <OptionTitle>Start Var: </OptionTitle>
+            <OptionValue>{config.startVar}</OptionValue>
+          </OptionTitleAndValueContainer>
+          <RangeAndReset>
+            <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, startVar: parseInt(e.target.value) })} value={config.startVar} />
+            <OptionResetButton handler={() => setConfig({ ...config, startVar: 0 })} />
+          </RangeAndReset>
+        </OptionContainer>
+        <OptionContainer>
+          <OptionTitleAndValueContainer>
+            <OptionTitle>End Var: </OptionTitle>
+            <OptionValue>{config.endVar}</OptionValue>
+          </OptionTitleAndValueContainer>
+          <RangeAndReset>
+            <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, endVar: parseInt(e.target.value) })} value={config.endVar} />            <OptionResetButton handler={() => setConfig({ ...config, endVar: 1000 })} />
+          </RangeAndReset>
+        </OptionContainer>
+        <OptionContainer>
+          <OptionTitleAndValueContainer>
+            <OptionTitle>Freq: </OptionTitle>
+            <OptionValue>{config.freq}</OptionValue>
+          </OptionTitleAndValueContainer>
+          <RangeAndReset>
+            <Range type='range' min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, freq: parseFloat(e.target.value) })} value={config.freq} />       <OptionResetButton handler={() => setConfig({ ...config, freq: 0.01 })} />
+          </RangeAndReset>
+        </OptionContainer>
+        <OptionContainer>
+          <OptionTitleAndValueContainer>
+            <OptionTitle>Decay: </OptionTitle>
+            <OptionValue>{config.decay}</OptionValue>
+          </OptionTitleAndValueContainer>
+          <RangeAndReset>
+            <Range type='range' min='0.0' max='100' step='0.001' onChange={(e) => setConfig({ ...config, decay: parseFloat(e.target.value) })} value={config.decay} /> <OptionResetButton handler={() => setConfig({ ...config, decay: 0.01 })} />
+          </RangeAndReset>
+        </OptionContainer>
+        <OptionContainer>
+          <OptionTitleAndValueContainer>
+            <OptionTitle>Reduce Rate: </OptionTitle>
+            <OptionValue>{config.reduceRate}</OptionValue>
+          </OptionTitleAndValueContainer>
+          <RangeAndReset>
+            <Range type='range' min='0.0' max='10' step='0.001' onChange={(e) => setConfig({ ...config, reduceRate: parseFloat(e.target.value) })} value={config.reduceRate} />
+            <OptionResetButton handler={() => setConfig({ ...config, reduceRate: 1 })} />
+          </RangeAndReset>
+        </OptionContainer>
       </OptionsContainer>
-      <BigResetButton handler={() => setConfig(INIT_VARS)}>Reset All!</BigResetButton>
+      <BigResetButtonWithMotion handler={() => setConfig(INIT_VARS)}>Reset All!</BigResetButtonWithMotion>
     </Container>
   )
 }
