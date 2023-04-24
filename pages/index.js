@@ -354,7 +354,7 @@ if (t < dur) {
         </OptionContainer>
         <OptionContainer>
           <OptionTitleAndValueContainer>
-            <OptionTitle>Start Var: </OptionTitle>
+            <OptionTitle>startVal: </OptionTitle>
             <OptionValue>{config.startVal}</OptionValue>
           </OptionTitleAndValueContainer>
           <RangeAndReset>
@@ -365,7 +365,7 @@ if (t < dur) {
         </OptionContainer>
         <OptionContainer>
           <OptionTitleAndValueContainer>
-            <OptionTitle>End Var: </OptionTitle>
+            <OptionTitle>endVal: </OptionTitle>
             <OptionValue>{config.endVal}</OptionValue>
           </OptionTitleAndValueContainer>
           <RangeAndReset>
