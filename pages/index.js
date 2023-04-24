@@ -1,14 +1,17 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Outfit } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
-import styled, { css } from 'styled-components'
-import { motion } from 'framer-motion'
-import React from 'react'
-import { useEffect } from 'react'
+import Head from 'next/head';
+import Image from 'next/image';
+import { Outfit, JetBrains_Mono } from 'next/font/google';
+import styles from '@/styles/Home.module.css';
+import styled, { css } from 'styled-components';
+import { motion } from 'framer-motion';
+import Highlight from 'react-highlight';
+import React from 'react';
+import { useEffect } from 'react';
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { atomOneDarkReasonable as theme } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 
 const outfit = Outfit({ subsets: ['latin'] })
-console.log(outfit)
+const jetBrainsMono = JetBrains_Mono({ subsets: ['latin'] });
 const REDUCE_RATE = 1;
 const X_AMPLIFY_FACTOR = 600;
 const DIFF_X = 0.53;
@@ -70,6 +73,16 @@ const Container = styled.main`
       margin: 3rem 15vw;
     }
 `;
+
+// const StyledHightlight = styled(Highlight)`
+//   /* background-color: hsl(0, 0%, 10%); */
+//   border-radius: 18px;
+//   font-size: 1.2em;
+//   .hljs{
+    
+//   }
+// `
+
 const OptionsContainer = styled.div`
 
   gap: 1.5em 2em;
@@ -136,7 +149,7 @@ const Title = styled.h1`
   `;
 
 
-const Range = styled(motion.input)`
+const Range = styled.input`
 appearance: none;
 width: 100%;
 background-color: transparent;
@@ -148,7 +161,7 @@ cursor: pointer;
 background-image: linear-gradient(to right, #ec4899 0%, #ec4899 ${makePercentage}, #404040 ${makePercentage}, #404040 100%);
 `;
 
-const NumInput = styled(motion.input)`
+const NumInput = styled.input`
   /* --input-focus-border: #ec4899; */
   appearance: none;
   margin: 0.6em;
@@ -158,7 +171,7 @@ const NumInput = styled(motion.input)`
   outline: 0;
   background: #404040;
   color: white;
-  width: calc(2.5rem + 0.3rem * ${props => { return props.numberLength > 1 ? props.numberLength : 1 }});
+  width: 4.5rem;
   font-family: ${outfit.className};
   font-weight: bold;
   font-size: 0.9rem;
@@ -259,13 +272,32 @@ export default function Home() {
         </motion.svg>
       return graph
     }
-    // console.log(1)
     setGraph(drawGraph());
   }, [refreshKey, config])
   return (
     <Container className={`${outfit.className}`} >
       <Title>After Effect Overshoot Expression Simulator</Title>
       {graph}
+      <SyntaxHighlighter language='javascript' style={theme} wrapLines wrapLongLines customStyle={{
+        borderRadius: "18px",
+        backgroundColor: "#222222",
+        padding: "2em",
+        fontSize: "1.2em"
+      }}>
+        {`freq = ${config.freq}
+decay = ${config.decay}
+t = time - inPoint
+startVal = [${config.startVar}]
+endVal = [${config.endVar}]
+dur = ${config.dur}
+
+if (t < dur) {
+  ease(t, 0, dur, startVal, endVal);
+} else {
+  amp = (endVar - startVar) / dur;
+  w = freq * Math.PI
+  endVal + amp * (Math.sin((t - dur) * w) / Math.exp(decay * (t - dur)) / w);`}
+      </SyntaxHighlighter>
       <OptionsContainer>
         <OptionContainer>
           <OptionTitleAndValueContainer>
@@ -295,8 +327,8 @@ export default function Home() {
             <OptionValue>{config.dur}s</OptionValue>
           </OptionTitleAndValueContainer>
           <RangeAndReset>
-            <Range type='range' min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, dur: parseFloat(e.target.value) })} value={config.dur} />
-            <NumInputWithMotion min='0.00' max='5.00' step='0.0001' onChange={(e) => setConfig({ ...config, dur: parseFloat(e.target.value) })} value={config.dur} />
+            <Range type='range' min='0.00' max='0.50' step='0.0001' onChange={(e) => setConfig({ ...config, dur: parseFloat(e.target.value) })} value={config.dur} />
+            <NumInputWithMotion min='0.00' max='0.50' step='0.0001' onChange={(e) => setConfig({ ...config, dur: parseFloat(e.target.value) })} value={config.dur} />
             <OptionResetButton handler={() => setConfig({ ...config, dur: INIT_VARS.dur })} />
           </RangeAndReset>
         </OptionContainer>
