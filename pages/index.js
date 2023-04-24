@@ -20,8 +20,8 @@ const INIT_VARS = {
   deltaT: 0.001,
   dur: 0.01,
   inPoint: 1.00,
-  startVar: 450,
-  endVar: 545,
+  startVal: 450,
+  endVal: 545,
   freq: 7,
   decay: 3,
   reduceRate: 1
@@ -44,6 +44,10 @@ function ResetButton(props) {
   )
 }
 
+
+const jetBrainsApplier = styled.div`
+font-family: ${jetBrainsMono.family} !important;
+`
 //text-white font-bold text-md w-32 bg-neutral-700 py-3 px-4 rounded-full
 const Button = styled(motion.button)`
   color: white;
@@ -78,7 +82,7 @@ const Container = styled.main`
 //   border-radius: 18px;
 //   font-size: 1.2em;
 //   .hljs{
-    
+
 //   }
 // `
 
@@ -237,7 +241,7 @@ export default function Home() {
 
   useEffect(() => {
     function drawGraph() {
-      const { endTime, deltaT, dur, inPoint, startVar, endVar, freq, decay, reduceRate } = config;
+      const { endTime, deltaT, dur, inPoint, startVal, endVal, freq, decay, reduceRate } = config;
       let howToMove = [];
       let time = 0.00;
 
@@ -245,14 +249,14 @@ export default function Home() {
       /* draw at t < dur */
       for (; t <= dur; time += deltaT, t = time - inPoint) {
         const progress = (time / dur);
-        howToMove.push([time * DIFF_X * X_AMPLIFY_FACTOR, (1200 - (easeInOutSine(progress) * (endVar - startVar)) + startVar) * config.reduceRate])
+        howToMove.push([time * DIFF_X * X_AMPLIFY_FACTOR, (1200 - (easeInOutSine(progress) * (endVal - startVal)) + startVal) * config.reduceRate])
       }
 
       /* draw at time <=3.0 */
       for (; time <= endTime; time += deltaT, t = time - inPoint) {
-        const amp = ((endVar - startVar) / dur);
+        const amp = ((endVal - startVal) / dur);
         const w = freq * Math.PI
-        const dst = -((endVar) + amp * (Math.sin((t - dur) * w) / Math.exp(decay * (t - dur)) / w)) * config.reduceRate;
+        const dst = -((endVal) + amp * (Math.sin((t - dur) * w) / Math.exp(decay * (t - dur)) / w)) * config.reduceRate;
         howToMove.push([time * DIFF_X * X_AMPLIFY_FACTOR, dst])
       }
 
@@ -266,7 +270,7 @@ export default function Home() {
         }
       }
       const graph =
-        <motion.svg className='p-1' viewBox={`150 ${-endVar * 2} 1600 ${1200 * REDUCE_RATE * REDUCE_RATE}`} fill='transparent'>
+        <motion.svg className='p-1' viewBox={`150 ${-endVal * 2} 1600 ${1200 * REDUCE_RATE * REDUCE_RATE}`} fill='transparent'>
           <path d={pathStr} stroke='white' strokeWidth="10"></path>
         </motion.svg>
       return graph
@@ -280,20 +284,26 @@ export default function Home() {
       <SyntaxHighlighter language='javascript' style={theme} wrapLines wrapLongLines customStyle={{
         borderRadius: "18px",
         backgroundColor: "#222222",
-        padding: "2em",
-        fontSize: "1.2em"
-      }}>
+        padding: "3.2em",
+        fontSize: "1em",
+        "span": {
+          "font-family": outfit.className
+        }
+      }}
+      
+      codeTagProps={{ className: jetBrainsMono.className }}
+      >
         {`freq = ${config.freq}
 decay = ${config.decay}
 t = time - inPoint
-startVal = [${config.startVar}]
-endVal = [${config.endVar}]
+startVal = [${config.startVal}]
+endVal = [${config.endVal}]
 dur = ${config.dur}
 
 if (t < dur) {
   ease(t, 0, dur, startVal, endVal);
 } else {
-  amp = (endVar - startVar) / dur;
+  amp = (endVal - startVal) / dur;
   w = freq * Math.PI
   endVal + amp * (Math.sin((t - dur) * w) / Math.exp(decay * (t - dur)) / w);`}
       </SyntaxHighlighter>
@@ -345,23 +355,23 @@ if (t < dur) {
         <OptionContainer>
           <OptionTitleAndValueContainer>
             <OptionTitle>Start Var: </OptionTitle>
-            <OptionValue>{config.startVar}</OptionValue>
+            <OptionValue>{config.startVal}</OptionValue>
           </OptionTitleAndValueContainer>
           <RangeAndReset>
-            <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, startVar: parseInt(e.target.value) })} value={config.startVar} />
-            <NumInputWithMotion min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, startVar: parseInt(e.target.value) })} value={config.startVar} />
-            <OptionResetButton handler={() => setConfig({ ...config, startVar: INIT_VARS.startVar })} />
+            <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, startVal: parseInt(e.target.value) })} value={config.startVal} />
+            <NumInputWithMotion min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, startVal: parseInt(e.target.value) })} value={config.startVal} />
+            <OptionResetButton handler={() => setConfig({ ...config, startVal: INIT_VARS.startVal })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
           <OptionTitleAndValueContainer>
             <OptionTitle>End Var: </OptionTitle>
-            <OptionValue>{config.endVar}</OptionValue>
+            <OptionValue>{config.endVal}</OptionValue>
           </OptionTitleAndValueContainer>
           <RangeAndReset>
-            <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, endVar: parseInt(e.target.value) })} value={config.endVar} />
-            <NumInputWithMotion min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, endVar: parseInt(e.target.value) })} value={config.endVar} />
-            <OptionResetButton handler={() => setConfig({ ...config, endVar: INIT_VARS.endVar })} />
+            <Range type='range' min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, endVal: parseInt(e.target.value) })} value={config.endVal} />
+            <NumInputWithMotion min='0' max='1000' step='1' onChange={(e) => setConfig({ ...config, endVal: parseInt(e.target.value) })} value={config.endVal} />
+            <OptionResetButton handler={() => setConfig({ ...config, endVal: INIT_VARS.endVal })} />
           </RangeAndReset>
         </OptionContainer>
         <OptionContainer>
