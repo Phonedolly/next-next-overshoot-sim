@@ -4,7 +4,6 @@ import { Outfit, JetBrains_Mono } from 'next/font/google';
 import styles from '@/styles/Home.module.css';
 import styled, { css } from 'styled-components';
 import { motion } from 'framer-motion';
-import Highlight from 'react-highlight';
 import React from 'react';
 import { useEffect } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
