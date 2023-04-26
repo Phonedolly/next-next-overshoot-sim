@@ -305,7 +305,8 @@ if (t < dur) {
 } else {
   amp = (endVal - startVal) / dur;
   w = freq * Math.PI
-  endVal + amp * (Math.sin((t - dur) * w) / Math.exp(decay * (t - dur)) / w);`}
+  endVal + amp * (Math.sin((t - dur) * w) / Math.exp(decay * (t - dur)) / w);
+}`}
       </SyntaxHighlighter>
       <OptionsContainer>
         <OptionContainer>
